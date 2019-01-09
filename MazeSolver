@@ -1,0 +1,175 @@
+#include <Servo.h>
+const int pingPin = 8;
+// Trigger Pin of Ultrasonic Sensor
+ // Echo Pin of Ultrasonic Sensor
+ const int echoPin = 3;
+long duration, inches, cm;
+Servo myservo;
+int electrode ;
+int a ;
+unsigned long int time ;
+int ultra(){
+        pinMode(pingPin, OUTPUT);
+   digitalWrite(pingPin, LOW);
+   delayMicroseconds(2);
+   digitalWrite(pingPin, HIGH);
+   delayMicroseconds(10);
+   digitalWrite(pingPin, LOW);
+   pinMode(echoPin, INPUT);
+   duration = pulseIn(echoPin, HIGH);
+  
+   cm = duration/29/2 ;
+   return cm ;
+
+
+}
+#include <QTRSensors.h>
+#define NUM_SENSORS             8  // number of sensors used
+#define NUM_SAMPLES_PER_SENSOR  4  // average 4 analog samples per sensor reading
+#define EMITTER_PIN             14  
+QTRSensorsAnalog qtra((unsigned char[]) {2, 21,22, 15, 5, 23, 24, 6 }, 
+NUM_SENSORS, NUM_SAMPLES_PER_SENSOR, EMITTER_PIN);
+unsigned int sensorValues[NUM_SENSORS];
+
+  
+int z = 0 ;
+int y = 0 ;
+int p = 0;
+int x = 0;
+void forward(){
+  digitalWrite(9,HIGH);
+  digitalWrite(10, HIGH);
+  digitalWrite(13,LOW );
+  digitalWrite(12,HIGH);
+}
+void left(){
+  digitalWrite(9,HIGH);
+  digitalWrite(10,HIGH);
+  digitalWrite(12,LOW);
+  digitalWrite(13,HIGH);
+ 
+}
+void right(){
+  digitalWrite(9,LOW);
+  digitalWrite(10,LOW);
+  digitalWrite(12,HIGH);
+  digitalWrite(13,LOW);
+ 
+}
+void halt(){
+  digitalWrite(10,LOW);
+  digitalWrite(12,LOW) ;
+}
+
+
+void setup() {
+   Serial.begin(9600); 
+    pinMode(9,OUTPUT);
+  pinMode(10,OUTPUT);
+  pinMode(12,OUTPUT);
+  pinMode(13,OUTPUT);
+  myservo.attach(3) ;
+     
+  
+}
+void loop() {
+  qtra.read(sensorValues);
+  forward();
+                          
+                          while(p==1 && sensorValues[7] <600){
+                             halt();
+                             delay(100);
+                             right() ;
+                              qtra.read(sensorValues) ;  
+                              Serial.println("LAST RIGHT"); 
+                              delay(200);
+                               
+                               
+                             
+                                                                                     
+                           } 
+                           
+                          while(x==1 && sensorValues[7] <600){
+                             halt();
+                             delay(100);
+                             left() ;
+                              qtra.read(sensorValues) ;  
+                              Serial.println("Left2"); 
+                              delay(200);
+                               p=1 ;
+                               
+                             
+                                                                                     
+                           }
+                           if(p==1){
+                             x = 2 ;
+                             
+                           }
+                        
+                           
+                            while( z==1 && sensorValues[0] <634){
+                               halt();
+                             delay(100);
+                             right() ;
+                              qtra.read(sensorValues) ;  
+                              Serial.println(" Right1");
+                                delay(200);
+                                      
+                                  y = 1 ;                       
+                             
+                                                              
+                           }
+
+                           while(y==0 && sensorValues[7] <600){
+                             halt();
+                             delay(100);
+                             left() ;
+                              qtra.read(sensorValues) ;  
+                              Serial.println("Left1"); 
+                              delay(150);
+                               z=1; 
+                                                      
+                           }
+                           
+                           
+                           
+                           while(y==1 && sensorValues[7] <600){
+                            
+                              halt();
+                             delay(10);
+                             right() ;
+                              qtra.read(sensorValues) ;  
+                              Serial.println(" Right");
+                              
+                             
+                               z=2;                          
+                           }
+                            while( z==2   && sensorValues[0] <634){
+                               halt();
+                             delay(100);
+                             right() ;
+                              qtra.read(sensorValues) ;  
+                              Serial.println(" Right2");
+                                delay(150);
+                               x = 1 ;                       
+                                 
+                             }
+                            while( sensorValues[4] >750 ){
+                             
+                             right() ;
+                          //   Serial.println("adjusting RIGHT");
+                             qtra.read(sensorValues) ;
+                           }
+                           
+                            while( sensorValues[3] >750 ){
+                             left() ;
+                            // Serial.println(" adjusting LEFT");
+                               qtra.read(sensorValues) ;
+                              }
+                              
+                           
+                           
+}
+
+                                
+
