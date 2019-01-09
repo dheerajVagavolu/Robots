@@ -1,0 +1,136 @@
+// Do not remove the include below
+#include "PlutoPilot.h"
+#include "Flight.h"
+#include "Control.h"
+#include "Sensor.h"
+#include "Motor.h"
+#include "Utils.h"
+#include "Print.h"
+
+bool turn = true;
+bool turned = false;
+bool turned2 = false;
+Timer tp;
+//The setup function is called once at Pluto's hardware startup
+void plutoInit()
+{
+// Add your hardware initialization code here
+	Control.setUserLoopFrequency(2);
+	Control.setFailsafeState(CRASH, false);
+}
+
+int16_t var;
+bool start = false;
+bool zone1 = false;
+bool zone2 = false;
+bool isarmed = false;
+
+//The function is called once before plutoPilot when you activate Developer Mode
+void onPilotStart()
+{
+  // do your one time stuffs here
+
+	Control.setRcCommand(RC_THROTTLE,3000);
+
+}
+
+
+
+// The loop function is called in an endless loop
+void plutoPilot()
+{
+
+
+
+	var = Flight.getAngle(AG_PITCH);
+	if (!isarmed)
+	{
+		isarmed = Control.arm();
+	}
+
+
+	if(var > 250 && !turned)
+	{
+		turned = true;
+	//	Control.setRcCommand(RC_PITCH,2400);
+		//Motor.setDirection(M2, FORWARD);
+
+			//	Motor.setDirection(M3, FORWARD);
+
+
+	}
+	if(var < -800 && turned)
+	{
+	  zone2 = true;
+	}
+	if(zone2 && turned && var > 800)
+	{
+	  zone1 = true;
+	  turned2 = true;
+	}
+
+	if(var < 0 && zone1 && turned2 )
+	{
+//		Control.setRcCommand(RC_PITCH,1500);
+
+
+		Control.setRcCommand(RC_THROTTLE,3000);
+
+
+
+
+
+	}
+
+	if(!zone1)
+	{
+			Control.setRcCommand(RC_THROTTLE,3000);
+			Flight.deactivateFlightMode(FM_ANGLE);
+			Flight.setAngleRate(AG_PITCH, 150);
+
+	//		Motor.setDirection(M2, BACKWARD);
+
+		//			Motor.setDirection(M3, BACKWARD);
+
+
+			//Add your repeated code here
+
+
+
+
+		//	Print.monitor("var ",var);
+		//	Print.monitor("\n");
+
+			Control.setRcCommand(RC_PITCH,900);
+
+	}
+
+
+
+
+
+
+
+}
+
+
+
+//The function is called once after plutoPilot when you deactivate Developer Mode
+void onPilotFinish()
+{
+
+
+// do your cleanup stuffs here
+	isarmed = false;
+
+	zone1 = false;
+	turned = false;
+	zone2 = false;
+	Flight.activateFlightMode(FM_ANGLE);
+	Flight.activateFlightMode(FM_ALTHOLD);
+	 turn = true;
+	 turned2 = false;
+	 start = false;
+
+
+}
