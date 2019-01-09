@@ -1,0 +1,2023 @@
+#include <Servo.h>
+const int pingPin = 7;
+// Trigger Pin of Ultrasonic Sensor
+ // Echo Pin of Ultrasonic Sensor
+ const int echoPin = 3;
+long duration, inches, cm;
+Servo myservo;
+int electrode ;
+int a ;
+int path = 0 ;
+int u ; 
+int tap = 0 ;
+int px1 = 0 ; 
+int varr1 = 0 ; 
+int k = 0 ;
+int l = 0 ;
+int kk = 0 ;
+int varr2 = 0 ;
+int lb = 750;
+int lw = 600;
+int rb = 750;
+int rw = 634;
+int mlb = 750;
+int mlw = 650;
+int mrb = 750;
+int mrw = 650;
+
+
+unsigned long int time ;
+int ultra(){
+        pinMode(pingPin, OUTPUT);
+   digitalWrite(pingPin, LOW);
+   delayMicroseconds(2);
+   digitalWrite(pingPin, HIGH);
+   delayMicroseconds(10);
+   digitalWrite(pingPin, LOW);
+   pinMode(echoPin, INPUT);
+   duration = pulseIn(echoPin, HIGH);
+  
+   cm = duration/29/2 ;
+   return cm ;
+
+
+}
+#include <QTRSensors.h>
+#define NUM_SENSORS             8  // number of sensors used
+#define NUM_SAMPLES_PER_SENSOR  4  // average 4 analog samples per sensor reading
+#define EMITTER_PIN             14  
+QTRSensorsAnalog qtra((unsigned char[]) {2, 21,22, 15, 5, 23, 24, 6 }, 
+NUM_SENSORS, NUM_SAMPLES_PER_SENSOR, EMITTER_PIN);
+unsigned int sensorValues[NUM_SENSORS];
+int c =0;
+int ccc= 0;
+int varr = 0;  
+int z = 0 ;
+int y = 0 ;
+int p = 0;
+int x = 0;
+int n = 0 ;
+int zz = 0 ;
+int yy = 0 ;
+int pp = 0;
+int xx = 0;
+int nn = 0 ;
+int qq = 0 ;
+void forward(){
+  digitalWrite(9,HIGH);
+  digitalWrite(10, HIGH);
+  digitalWrite(13,LOW );
+  digitalWrite(12,HIGH);
+}
+void left(){
+  digitalWrite(9,HIGH);
+  digitalWrite(10,HIGH);
+  digitalWrite(12,LOW);
+  digitalWrite(13,HIGH);
+ 
+}
+void right(){
+  digitalWrite(9,LOW);
+  digitalWrite(10,LOW);
+  digitalWrite(12,HIGH);
+  digitalWrite(13,LOW);
+ 
+}
+void rightcm(){
+  digitalWrite(9,LOW);
+  digitalWrite(10,HIGH);
+  digitalWrite(12,HIGH);
+  digitalWrite(13,LOW);
+ 
+}
+
+void leftcm(){
+  digitalWrite(9,HIGH);
+  digitalWrite(10,HIGH);
+  digitalWrite(12,HIGH);
+  digitalWrite(13,HIGH);
+ 
+}
+
+
+void halt(){
+  digitalWrite(10,LOW);
+  digitalWrite(12,LOW) ;
+}
+void backward(){
+  digitalWrite(9,LOW);
+  digitalWrite(10, HIGH);
+  digitalWrite(13,HIGH );
+  digitalWrite(12,HIGH);
+
+}
+void forward1(){
+  digitalWrite(9,HIGH);
+  analogWrite(10, 150);
+  digitalWrite(13,LOW );
+  analogWrite(12,150);
+  
+  
+  
+  
+}
+void reverse()
+{
+  backward();
+  delay(1000);
+  halt();
+}
+
+void reverse180right(){
+  reverse();
+  one8right();
+  halt();
+}
+void reverse180left(){
+  reverse();
+  one8left();
+  halt();
+  }
+///
+
+void one8rightl(){
+  leftcm();
+  delay(750);
+  halt();
+  
+  
+  
+}
+
+
+    void one8right(){
+      qtra.read(sensorValues) ;
+                    
+                        while(sensorValues[0] >rb){
+                          rightcm();
+                            qtra.read(sensorValues) ;
+                        }
+                        
+                           while( sensorValues[7] >lb && sensorValues[4]>mlb && sensorValues[3] > mrb ){
+                            rightcm() ;
+                             qtra.read(sensorValues) ; 
+                           }
+                           
+                           while( sensorValues[0] >rb && sensorValues[4]>mlb && sensorValues[3] > mrb ){
+                            left() ;
+                             qtra.read(sensorValues) ; 
+                           }
+                           
+                                  
+                         while( sensorValues[4] < mlb ){
+                             
+                             halt();
+                           Serial.println("halt");
+                             qtra.read(sensorValues) ;
+                           }
+                           halt();
+                           
+                            
+                           
+}
+
+   void one8left(){
+      qtra.read(sensorValues) ;
+                    
+                        while(sensorValues[7] >lb){
+                          leftcm();
+                            qtra.read(sensorValues) ;
+                        }
+                        
+                           while( sensorValues[0] >rb && sensorValues[4]>mlb && sensorValues[3] > mrb ){
+                            leftcm() ;
+                             qtra.read(sensorValues) ; 
+                           }
+                           
+                           while( sensorValues[7] >lb && sensorValues[4]>mlb && sensorValues[3] > mrb ){
+                            right() ;
+                             qtra.read(sensorValues) ; 
+                           }
+                           
+                                  
+                         while( sensorValues[3] < mrb ){
+                             
+                             halt();
+                           Serial.println("halt");
+                             qtra.read(sensorValues) ;
+                           }
+                           halt();
+                           
+                            
+                           
+}
+
+
+ void backdetectright(){
+   qtra.read(sensorValues);
+   while( sensorValues[0] > rw && sensorValues[4]>mlb && sensorValues[3] > mrb && sensorValues[7] > lw){
+     backward();
+     qtra.read(sensorValues);
+   }
+   
+  
+   
+ 
+  
+  while(((sensorValues[0] > rw) && (sensorValues[7] > lw) && ((sensorValues[3] < mrb) || sensorValues[4] < mlb ))){
+    halt();
+    
+     qtra.read(sensorValues);
+  }
+  
+   
+   while(((sensorValues[7] <lw) || sensorValues[0] <rw)){       //first junction
+                             halt();
+                             delay(100);
+                             right() ;
+                              qtra.read(sensorValues) ;  
+                              Serial.println("Left1"); 
+                              delay(150);
+                                
+                                                      
+                           }
+                             while( sensorValues[4] >mlb ){
+                             
+                             right() ;
+                          //   Serial.println("adjusting RIGHT");
+                             qtra.read(sensorValues) ;
+                           }
+                           while( sensorValues[3] >mrb ){
+                             left() ;
+                            // Serial.println(" adjusting LEFT");
+                               qtra.read(sensorValues) ;
+                              }
+                              
+                        
+                           
+   
+   
+   
+ }
+
+void backdetectleft(){
+   qtra.read(sensorValues);
+   while( sensorValues[0] > rw && sensorValues[4]>mlb && sensorValues[3] > mrb && sensorValues[7] > lw){
+     backward();
+     qtra.read(sensorValues);
+   }
+  //imporatant 
+  while(((sensorValues[0] > rw) && (sensorValues[7] > lw) && ((sensorValues[3] < mrb) || sensorValues[4] < mlb ))){
+    halt();
+    
+     qtra.read(sensorValues);
+  }
+
+   
+   while(((sensorValues[7] <lw) || sensorValues[0] <rw)){       //first junction
+                             halt();
+                             delay(100);
+                             left() ;
+                              qtra.read(sensorValues) ;  
+                              Serial.println("Left1"); 
+                              delay(150);
+                                
+                                                      
+                           }
+                           while( sensorValues[3] >mrb ){
+                             left() ;
+                            // Serial.println(" adjusting LEFT");
+                               qtra.read(sensorValues) ;
+                              }
+                              
+                            while( sensorValues[4] >mlb ){
+                             
+                             right() ;
+                          //   Serial.println("adjusting RIGHT");
+                             qtra.read(sensorValues) ;
+                           }
+                           
+  }
+   void path24(){
+    halt();
+   delay(4000); 
+  left();
+    delay(850);
+  halt(); 
+forward1();
+delay(500);
+halt();
+    delay(15000);    
+   backdetectleft();
+   halt();
+}
+void p2(){
+     left();
+    delay(850);
+    forward1();
+    delay(500);
+    halt();
+    delay(30000);
+    backdetectleft();
+    halt();
+}
+void p2l(){
+     halt();
+     delay(11000);
+     left();
+    delay(850);
+    forward1();
+    delay(500);
+    halt();
+    delay(16000);
+    backdetectleft();
+    halt();
+}
+void p2a(){
+     halt();
+     delay(32000);
+     left();
+    delay(850);
+    forward1();
+    delay(500);
+    halt();
+    delay(15000);
+    backdetectright();
+    halt();
+}
+void p4(){
+     halt();
+     delay(34000);
+     left();
+    delay(850);
+    forward1();
+    delay(500);
+    halt();
+    delay(15000);
+    backdetectleft();
+    halt();
+}
+void p3(){
+     left();
+    delay(850);
+    forward1();
+    delay(500);
+    halt();
+    delay(57000);
+    backdetectleft();
+    halt();
+}
+void p3m(){
+     halt();
+     delay(33000);
+     left();
+    delay(850);
+    forward1();
+    delay(500);
+    halt();
+    delay(15000);
+    backdetectleft();
+    halt();
+}
+void p3a(){
+     halt();
+     delay(34000);
+     left();
+    delay(850);
+    forward1();
+    delay(500);
+    halt();
+    delay(15000);
+    backdetectleft();
+    halt();
+}
+
+void path31(){
+   
+     left();
+    delay(850);
+    forward1();
+    delay(500);
+    halt();
+    delay(15000);
+    backdetectright();
+    halt();
+}
+void path31a(){
+     halt();
+    delay(8000);
+     left();
+    delay(850);
+    forward1();
+    delay(500);
+    halt();
+    delay(16000);
+    backdetectright();
+    halt();
+}
+void p1(){
+     halt();
+     delay(34000);
+     left();
+    delay(850);
+    forward();
+    delay(500);
+    halt();
+    delay(15000);
+    backdetectright();
+    halt();
+}
+  
+  
+
+
+                    void acc(){
+                            
+                       qtra.read(sensorValues);
+                      
+                    
+                          while(p==1 && ((sensorValues[7] <lw) || (sensorValues[0] <rw) || (sensorValues[0]>rb && sensorValues[3]>mrb &&sensorValues[4]>mlb &&sensorValues[7]>lb  ))){                            //sixth junction
+                               x=3;
+                               
+                               
+                             halt();
+                             delay(100);
+                             
+                             right() ;
+                             
+                              Serial.println("LAST RIGHT"); 
+                              delay(200);
+                               qtra.read(sensorValues) ;  
+                           
+                             y=4;
+                          }
+                               
+                               
+                             if(x==3){
+                               p=2;
+                             }
+                         
+                           
+                          while(x==1 && sensorValues[7] <lb){                               //fifth junction
+                             halt();
+                             delay(150);
+                             left() ;
+                              qtra.read(sensorValues) ;  
+                              Serial.println("Left2"); 
+                              delay(150);
+                               p=1 ;
+                               z=3;
+                               
+                               
+                             
+                                                                                     
+                           }
+                           if(p==1){
+                             x = 2 ;
+                             
+                           }
+                           
+                             if(time>13 && path ==0 && time<18){
+                                                    u = ultra();
+                                   if(u <20 && u>0){
+                                            halt();
+                                           
+                                           
+                                            path = 2 ; 
+                                           
+                                   }
+                                 
+                                    qtra.read(sensorValues) ;
+                                      while( sensorValues[3] >mrb ){
+                             left() ;
+                            // Serial.println(" adjusting LEFT");
+                               qtra.read(sensorValues) ;
+                              }
+                               qtra.read(sensorValues) ;
+                            while( sensorValues[4] >mlb ){
+                             
+                             right() ;
+                          //   Serial.println("adjusting RIGHT");
+                             qtra.read(sensorValues) ;
+                           } 
+                             } 
+                             
+                             
+                             
+                             
+                           
+                        
+                           
+                            while( z==1 && sensorValues[0] <rb){                               //second junction
+                               halt();
+                             delay(100);
+                             right() ;
+                              qtra.read(sensorValues) ;  
+                              Serial.println(" Right1");
+                                delay(200);
+                                       
+                                  y = 1 ;                       
+                             
+                                                              
+                           }
+                           if( z==0 && path==0){
+                                   u = ultra();
+                                   if(u <20 && u>0){
+                                            halt();
+                                            delay(500);
+                                            path = 1 ; 
+                                           
+                                   }
+                                    qtra.read(sensorValues) ;
+                                      while( sensorValues[3] >mrb ){
+                             left() ;
+                            // Serial.println(" adjusting LEFT");
+                               qtra.read(sensorValues) ;
+                              }
+                               qtra.read(sensorValues) ;
+                            while( sensorValues[4] >mlb ){
+                             
+                             right() ;
+                          //   Serial.println("adjusting RIGHT");
+                             qtra.read(sensorValues) ;
+                           }
+                           }
+                             
+                             
+                             
+                             
+                             
+                             
+                           
+                         if(path ==1 && time >90){
+                           while( ((sensorValues[7] <lw) || (sensorValues[0] <rw) || (sensorValues[0]>rb && sensorValues[3]>mrb &&sensorValues[4]>mlb &&sensorValues[7]>lb  ))){       //first junction
+                            
+                             halt();
+                             delay(100);
+                             forward() ;
+                              qtra.read(sensorValues) ;  
+                              Serial.println("Left1"); 
+                              delay(800);
+                              halt();
+                              c++;
+                              if(c == 3){
+                                halt();
+                               delay(1000000000000000000); 
+                              }
+                              reverse180right();
+                              
+                              varr1 = 0 ;
+                            
+                                                          
+                                                      
+                           
+                         }
+                         }
+                         
+                         
+                                                
+                         
+                         
+                           
+                         if(  path ==4 && time >90){
+                           while( ((sensorValues[7] <lw) || (sensorValues[0] <rw) || (sensorValues[0]>rb && sensorValues[3]>mrb &&sensorValues[4]>mlb &&sensorValues[7]>lb  ))){       //first junction
+                            
+                             halt();
+                             delay(100);
+                             forward() ;
+                              qtra.read(sensorValues) ;  
+                              Serial.println("Left1"); 
+                              delay(800);
+                              halt();
+                              c++;
+                              if(c == 3){
+                                halt();
+                               delay(1000000000000000000); 
+                              }
+                              varr1 = 0 ;
+                              reverse180left();
+                              
+                              
+                              
+                            
+                                                          
+                                                      
+                           
+                         }
+                         }
+                         
+                           
+                           
+                           
+                           while(y==0 && ((sensorValues[7] <lw) || (sensorValues[0] <rw) || (sensorValues[0]>rb && sensorValues[3]>mrb &&sensorValues[4]>mlb &&sensorValues[7]>lb  ))){       //first junction
+                             halt();
+                             delay(100);
+                             left() ;
+                              qtra.read(sensorValues) ;  
+                              Serial.println("Left1"); 
+                              delay(150);
+                               z=1; 
+                                                      
+                           }
+                           
+                           
+                           
+                           while(y==1 && sensorValues[7] <lw){                                //third junction
+                            
+                              halt();
+                             delay(10);
+                             right() ;
+                              qtra.read(sensorValues) ;  
+                              Serial.println(" Right");
+                              
+                             
+                               z=2;                          
+                           }
+                            while( z==2   && sensorValues[0] <rw){                           //fourth junction
+                               halt();
+                             delay(100);
+                             right() ;
+                              qtra.read(sensorValues) ;  
+                              Serial.println(" Right2");
+                                delay(200);
+                                y=2;
+                               x = 1 ;                       
+                                 
+                             }
+                              forward();
+                           
+                    }
+ void firstfast3(){
+                      qtra.read(sensorValues);
+                     forward(); 
+                      if(path ==2 && time >90){
+                           while( ((sensorValues[7] <lw) || (sensorValues[0] <rw) || (sensorValues[0]>rb && sensorValues[3]>mrb &&sensorValues[4]>mlb &&sensorValues[7]>lb  ))){       //first junction
+                            
+                             halt();
+                             delay(100);
+                             forward() ;
+                              qtra.read(sensorValues) ;  
+                              Serial.println("Left1"); 
+                              delay(800);
+                              halt();
+                              c++;
+                              if(c == 3){
+                                halt();
+                               delay(1000000000000000000); 
+                              }
+                              reverse180right();
+                              
+                              varr1 = 0 ;
+                            
+                                                          
+                                                      
+                           
+                         }
+                         }                     
+                           while(nn == 0 && sensorValues[7] <lw){
+                             halt();
+                             delay(100);
+                             left() ;
+                              qtra.read(sensorValues) ;  
+                              Serial.println("Left2"); 
+                              delay(250);
+                              yy = 1 ;
+                            
+                             
+                             
+                           }
+                           if( yy == 1){
+                             nn = 1;
+                           }
+                          if( nn==1 && path==0  && zz ==0){
+                            if(time>56){
+                                   u = ultra();
+                                   if(u <20 && u>0){
+                                            halt();
+                                           delay(2000);
+                                            path = 3 ; 
+                                           
+                                   }
+                                   
+                                    qtra.read(sensorValues) ;
+                                      while( sensorValues[3] >mrb ){
+                             left() ;
+                            // Serial.println(" adjusting LEFT");
+                               qtra.read(sensorValues) ;
+                              }
+                               qtra.read(sensorValues) ;
+                            while( sensorValues[4] >mlb ){
+                             
+                             right() ;
+                          //   Serial.println("adjusting RIGHT");
+                             qtra.read(sensorValues) ;
+                           }
+                          }} 
+                            
+                         
+                         
+                         if(path ==3 && time >90){
+                           while( ((sensorValues[7] <lw) || (sensorValues[0] <rw) || (sensorValues[0]>rb && sensorValues[3]>mrb &&sensorValues[4]>mlb &&sensorValues[7]>lb  ))){       //first junction
+                            
+                             halt();
+                             delay(100);
+                             forward() ;
+                              qtra.read(sensorValues) ;  
+                              Serial.println("Left1"); 
+                              delay(800);
+                              halt();
+                              c++;
+                              if(c == 3){
+                                halt();
+                               delay(1000000000000000000); 
+                              }
+                              reverse180right();
+                              
+                              varr1 = 0 ;
+                            
+                                                          
+                                                      
+                           
+                         }
+                         }
+                          while(xx==1 && sensorValues[0] <rw){                               //fifth junction
+                             halt();
+                             delay(100);
+                             right() ;
+                              qtra.read(sensorValues) ;  
+                              Serial.println("right"); 
+                              delay(200);
+                              zz=3;
+                              
+                               
+                             
+                                                                                     
+                           }
+                           if(zz==3){
+                             xx=2;
+                           }
+                        
+                           
+                            while( zz==1 && sensorValues[7] <lw){                               //second junction
+                               halt();
+                             delay(100);
+                             left() ;
+                              qtra.read(sensorValues) ;  
+                              Serial.println(" LEFT1");
+                                delay(200);
+                                      
+                                  yy = 2 ;                       
+                             
+                                                              
+                           }
+                                      
+                           while(yy==1 && ( (sensorValues[0] <rw && sensorValues[3] <mrw && sensorValues[4] <mlw)|| (sensorValues[7] <lw && sensorValues[3] <mrw && sensorValues[4] <mlw))){       //first junction
+                             zz=1; 
+                             l=millis();
+                             halt();
+                             delay(100);
+                             right() ;
+                              qtra.read(sensorValues) ;  
+                              Serial.println("RIGHT1"); 
+                              delay(150);
+                              
+                                                      
+                           }
+                           
+                           
+                           
+                           while(yy==2 && sensorValues[0] <rw){                                //third junction
+                            
+                              halt();
+                             delay(10);
+                             left() ;
+                              qtra.read(sensorValues) ;  
+                              Serial.println(" Right");
+                              
+                             
+                               zz=2;                          
+                           }
+                            while( zz==2   && sensorValues[7] <lw){                           //fourth junction
+                               halt();
+                             delay(100);
+                             left() ;
+                              qtra.read(sensorValues) ;  
+                              Serial.println(" Right2");
+                                delay(150);
+                               xx = 1 ; 
+                               yy=3;                      
+                                 
+                             }
+                             
+                             while( sensorValues[4] >mlb ){
+                             
+                             right() ;
+                          //   Serial.println("adjusting RIGHT");
+                             qtra.read(sensorValues) ;
+                           }
+                             
+                           
+                              while( sensorValues[3] >mrb ){
+                             left() ;
+                            // Serial.println(" adjusting LEFT");
+                               qtra.read(sensorValues) ;
+                              }
+                                
+
+                              
+                           
+                      }                    
+                    
+
+ 
+ 
+                    
+void firstfast(){ 
+                     u = ultra();
+                      
+                      qtra.read(sensorValues);
+                       if(path ==3 && time >80){
+                           while( ((sensorValues[3]<mrb &&sensorValues[4]<mlb && sensorValues[7] <lw) || (sensorValues[3]>mrb &&sensorValues[4]>mlb && sensorValues[0] <rw) || (sensorValues[0]>rb && sensorValues[3]>mrb &&sensorValues[4]>mlb &&sensorValues[7]>lb  ))){       //first junction
+                            
+                             halt();
+                             delay(100);
+                             forward() ;
+                              qtra.read(sensorValues) ;  
+                              Serial.println("Left1"); 
+                              delay(800);
+                              halt();
+                              c++;
+                              if(c == 3){
+                                halt();
+                               delay(1000000000000000000); 
+                              }
+                              reverse180right();
+                              
+                              varr1 = 0 ;
+                              
+                            
+                                                          
+                                                      
+                           
+                         }
+                       }
+                        if(path ==2 && time >90){
+                           while( ((sensorValues[3]<mrb &&sensorValues[4]<mlb && sensorValues[7] <lw) || (sensorValues[3]>mrb &&sensorValues[4]>mlb && sensorValues[0] <rw) || (sensorValues[0]>rb && sensorValues[3]>mrb &&sensorValues[4]>mlb &&sensorValues[7]>lb  ))){       //first junction
+                            
+                             halt();
+                             delay(100);
+                             forward() ;
+                              qtra.read(sensorValues) ;  
+                              Serial.println("Left1"); 
+                              delay(800);
+                              halt();
+                              c++;
+                              if(c == 3){
+                                halt();
+                               delay(1000000000000000000); 
+                              }
+                              reverse180right();
+                              
+                              varr1 = 0 ;
+                            
+                                                          
+                                                      
+                           
+                         }
+                         }
+                   
+                         
+                           
+                                             
+                           
+               
+                      
+                      
+                      while(nn == 0 && sensorValues[7] <lw){
+                             halt();
+                             delay(100);
+                             left() ;
+                              qtra.read(sensorValues) ;  
+                              Serial.println("Left2"); 
+                              delay(250);
+                              yy = 1 ;
+                            
+                             
+                             
+                           }
+                           if( yy == 1){
+                             nn = 1;
+                           }
+                           
+                          
+                           
+                            
+                     forward(); 
+                     if( yy ==1 && kk==2 && u<20 && u>0){
+                       
+                       path = 3 ;
+                       
+                     }
+                     if(xx == 2 && u<20 && u >0){
+                       
+                       path = 4 ;
+                      
+                       
+                       
+                     }
+                      
+                         
+                          while(xx==1 && sensorValues[0] <rw){                               //fifth junction
+                             halt();
+                             delay(100);
+                             right() ;
+                              qtra.read(sensorValues) ;  
+                              Serial.println("right"); 
+                              delay(200);
+                              zz=3;
+                              
+                               
+                             
+                                                                                     
+                           }
+                           if(zz==3){
+                             xx=2;
+                           }
+                        
+                           
+                            while( zz==1 && sensorValues[7] <lw){                               //second junction
+                               halt();
+                             delay(100);
+                             left() ;
+                              qtra.read(sensorValues) ;  
+                              Serial.println(" LEFT1");
+                                delay(200);
+                                      
+                                  yy = 2 ;                       
+                             
+                                                              
+                           }
+                         
+                                      
+                           while(yy==1 && ( (sensorValues[0] <rw && sensorValues[3] <mrw && sensorValues[4] <mlw)|| (sensorValues[7] <lw && sensorValues[3] <mrw && sensorValues[4] <mlw))){       //first junction
+                           
+                            
+                             zz=1; 
+                             l=millis();
+                             halt();
+                             delay(100);
+                             right() ;
+                              qtra.read(sensorValues) ;  
+                              Serial.println("RIGHT1"); 
+                              delay(150);
+                              
+                              
+                                                      
+                           }
+                           
+                           
+                           
+                           while(yy==2 && sensorValues[0] <rw){                                //third junction
+                            
+                              halt();
+                             delay(10);
+                             left() ;
+                              qtra.read(sensorValues) ;  
+                              Serial.println(" Right");
+                              
+                             
+                               zz=2;                          
+                           }
+                            while( zz==2   && sensorValues[7] <lw){                           //fourth junction
+                               halt();
+                             delay(100);
+                             left() ;
+                              qtra.read(sensorValues) ;  
+                              Serial.println(" Right2");
+                                delay(150);
+                               xx = 1 ; 
+                               yy=3;                      
+                                 
+                             }
+                             
+                             while( sensorValues[4] >mlb ){
+                             
+                             right() ;
+                          //   Serial.println("adjusting RIGHT");
+                             qtra.read(sensorValues) ;
+                           }
+                             
+                           
+                              while( sensorValues[3] >mrb ){
+                             left() ;
+                            // Serial.println(" adjusting LEFT");
+                               qtra.read(sensorValues) ;
+                              }
+                                
+
+                              
+                           
+                      }                    
+                    
+
+
+void setup() {
+   Serial.begin(28800); 
+    pinMode(9,OUTPUT);
+  pinMode(10,OUTPUT);
+  pinMode(12,OUTPUT);
+  pinMode(13,OUTPUT);
+  myservo.attach(4) ;
+     
+  
+}
+void loop() {
+  time = millis()/1000 ;
+ 
+                     
+  
+                       Serial.println(path);
+                      if(time <=18){
+                        acc() ;
+                       
+                            qtra.read(sensorValues) ;
+                              while( sensorValues[3] >mrb && time <=18 ){
+                             left() ;
+                            // Serial.println(" adjusting LEFT");
+                               qtra.read(sensorValues) ;
+                             
+                              }
+                               qtra.read(sensorValues) ;
+                            while( sensorValues[4] >mlb && time <=18 ){
+                             
+                             right() ;
+                          //   Serial.println("adjusting RIGHT");
+                             qtra.read(sensorValues) ;
+                           
+                           }                        
+                      }
+                      if(time >18 && time <=20){
+                           forward();
+                      }
+                      
+                      if(time >20 && time <51){
+                    halt();
+                    Serial.println(path);                        
+                      }
+                      if( time >=51 && time <=53){
+                            if(varr == 0){
+                        reverse180right() ;
+                         kk = 2 ; 
+                        varr++;
+                      }
+                      }                                                                                     
+//                      if(time > 24 ){
+//                                             firstfast();
+//                                             a = firstfast();
+//                                    if( a ==1 ){
+//                                      u = ultra();
+//                                      if(u <20 && u>0){
+//                                        path24();
+//                                        halt();
+//                                        tap = 1 ;
+//                                    }
+//                                    }
+//                                    if( a ==2  && tap ==0){
+//                                      u = ultra();
+//                                      if(u <20 && u>0){
+//                                        path24();
+//                                        halt();
+//                                    }
+//                                                                                               
+//                                  }
+//                      }
+                      if( time>53 && path == 1){
+                             if(c ==0){  
+                        if(varr1 !=2){
+                                if(time >71 ){     
+                                   if(varr1 == 0){
+                                    one8rightl() ;
+                                    varr1++;
+                                  }
+                                }
+                                firstfast3();
+                        if(varr1 == 1){        
+                           a = ultra();
+                           if( varr1 ==1 && a<20){
+                             if(time >70){
+                                path31();
+                                varr1++;
+                                z = 0 ;
+                                 y = 0 ;
+                                 p = 0;
+                                 x = 0;
+                                 n = 0 ;
+                                 zz = 0 ;
+                                 yy = 0 ;
+                                 pp = 0;
+                                 xx = 0;
+                                 nn = 0 ;
+                                 qq = 0 ;
+                                 k =  0 ;
+                                 l = 0 ;
+                             }
+                      }
+                        }
+                         while( sensorValues[4] >mlb ){
+                             
+                             right() ;
+                          //   Serial.println("adjusting RIGHT");
+                             qtra.read(sensorValues) ;
+                           }
+                             
+                           
+                              while( sensorValues[3] >mrb ){
+                             left() ;
+                            // Serial.println(" adjusting LEFT");
+                               qtra.read(sensorValues) ;
+                              }
+                        }
+                        if(varr1 ==2){
+                         
+                         while( sensorValues[4] >mlb ){
+                             
+                             right() ;
+                          //   Serial.println("adjusting RIGHT");
+                             qtra.read(sensorValues) ;
+                           }
+                             
+                           
+                              while( sensorValues[3] >mrb ){
+                             left() ;
+                            // Serial.println(" adjusting LEFT");
+                               qtra.read(sensorValues) ;
+                              }
+                             
+                            acc() ;
+                              }
+                             }
+                             if(c ==1){
+                                                                       if(varr1 !=2){
+                                                                          if(time >99 ){     
+                                                                                 if(varr1 == 0){
+                                                                                  one8rightl() ;
+                                                                                  varr1++;
+                                                                                }
+                                                                              }
+                                                                              firstfast3();
+                                                                      if(varr1 == 1){        
+                                                                         a = ultra();
+                                                                         if( varr1 ==1 && a<20){
+                                                                           if(time >99){
+                                                                              p1();
+                                                                              varr1++;
+                                                                              z = 0 ;
+                                                                               y = 0 ;
+                                                                               p = 0;
+                                                                               x = 0;
+                                                                               n = 0 ;
+                                                                               zz = 0 ;
+                                                                               yy = 0 ;
+                                                                               pp = 0;
+                                                                               xx = 0;
+                                                                               nn = 0 ;
+                                                                               qq = 0 ;
+                                                                               k =  0 ;
+                                                                               l = 0 ;
+                                                                           }
+                                                                    }
+                                                                      }
+                                                                       while( sensorValues[4] >mlb ){
+                                                                           
+                                                                           right() ;
+                                                                        //   Serial.println("adjusting RIGHT");
+                                                                           qtra.read(sensorValues) ;
+                                                                         }
+                                                                           
+                                                                         
+                                                                            while( sensorValues[3] >mrb ){
+                                                                           left() ;
+                                                                          // Serial.println(" adjusting LEFT");
+                                                                             qtra.read(sensorValues) ;
+                                                                            }
+                                                                      }
+                                                                      if(varr1 ==2){
+                                                                       
+                                                                       while( sensorValues[4] >mlb ){
+                                                                           
+                                                                           right() ;
+                                                                        //   Serial.println("adjusting RIGHT");
+                                                                           qtra.read(sensorValues) ;
+                                                                         }
+                                                                           
+                                                                         
+                                                                            while( sensorValues[3] >mrb ){
+                                                                           left() ;
+                                                                          // Serial.println(" adjusting LEFT");
+                                                                             qtra.read(sensorValues) ;
+                                                                            }
+                                                                           
+                                                                          acc() ;
+                                                                            }                                              
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                            
+                         } 
+                         if(c ==2){
+                                                                       if(varr1 !=2){
+                                                                          if(time >159 ){     
+                                                                                 if(varr1 == 0){
+                                                                                  one8rightl() ;
+                                                                                  varr1++;
+                                                                                }
+                                                                              }
+                                                                              firstfast3();
+                                                                      if(varr1 == 1){        
+                                                                         a = ultra();
+                                                                         if( varr1 ==1 && a<20){
+                                                                           if(time >159){
+                                                                              p1();
+                                                                              varr1++;
+                                                                              z = 0 ;
+                                                                               y = 0 ;
+                                                                               p = 0;
+                                                                               x = 0;
+                                                                               n = 0 ;
+                                                                               zz = 0 ;
+                                                                               yy = 0 ;
+                                                                               pp = 0;
+                                                                               xx = 0;
+                                                                               nn = 0 ;
+                                                                               qq = 0 ;
+                                                                               k =  0 ;
+                                                                               l = 0 ;
+                                                                           }
+                                                                    }
+                                                                      }
+                                                                       while( sensorValues[4] >mlb ){
+                                                                           
+                                                                           right() ;
+                                                                        //   Serial.println("adjusting RIGHT");
+                                                                           qtra.read(sensorValues) ;
+                                                                         }
+                                                                           
+                                                                         
+                                                                            while( sensorValues[3] >mrb ){
+                                                                           left() ;
+                                                                          // Serial.println(" adjusting LEFT");
+                                                                             qtra.read(sensorValues) ;
+                                                                            }
+                                                                      }
+                                                                      if(varr1 ==2){
+                                                                       
+                                                                       while( sensorValues[4] >mlb ){
+                                                                           
+                                                                           right() ;
+                                                                        //   Serial.println("adjusting RIGHT");
+                                                                           qtra.read(sensorValues) ;
+                                                                         }
+                                                                           
+                                                                         
+                                                                            while( sensorValues[3] >mrb ){
+                                                                           left() ;
+                                                                          // Serial.println(" adjusting LEFT");
+                                                                             qtra.read(sensorValues) ;
+                                                                            }
+                                                                           
+                                                                          acc() ;
+                                                                            }                                              
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                            
+                         }
+                         
+                               
+                        }
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+       if(time>50 && path==4){
+                       if(c ==0){  
+                        if(varr1 !=2){
+                                if(time >68){
+                                  varr1 = 1 ;
+                                  
+                                }
+                                
+                                
+                                acc();
+                        if(varr1 == 1){        
+                           a = ultra();
+                           if( varr1 ==1 && a<20){
+                             if(time>68){
+                                path24();
+                                varr1++;
+                                z = 0 ;
+                                 y = 0 ;
+                                 p = 0;
+                                 x = 0;
+                                 n = 0 ;
+                                 zz = 0 ;
+                                 yy = 0 ;
+                                 pp = 0;
+                                 xx = 0;
+                                 nn = 0 ;
+                                 qq = 0 ;
+                                 k =  0 ;
+                                 l = 0 ;
+                             
+                      }
+                           }
+                        }
+                         while( sensorValues[4] >mlb ){
+                             
+                             right() ;
+                          //   Serial.println("adjusting RIGHT");
+                             qtra.read(sensorValues) ;
+                           }
+                             
+                           
+                              while( sensorValues[3] >mrb ){
+                             left() ;
+                            // Serial.println(" adjusting LEFT");
+                               qtra.read(sensorValues) ;
+                              }
+                        }
+                        if(varr1 ==2){
+                         
+                         while( sensorValues[4] >mlb ){
+                             
+                             right() ;
+                          //   Serial.println("adjusting RIGHT");
+                             qtra.read(sensorValues) ;
+                           }
+                             
+                           
+                              while( sensorValues[3] >mrb ){
+                             left() ;
+                            // Serial.println(" adjusting LEFT");
+                               qtra.read(sensorValues) ;
+                              }
+                             
+                            acc() ;
+                              }
+                             }
+                             if(c ==1){
+                                                                       if(varr1 !=2){
+                                                                        
+                                                                          if(time >90 &&varr1 ==0 ){     
+                                                                                
+                                                                                  varr1++;
+                                                                                
+                                                                              }
+                                                                              acc();
+                                                                              
+                                                                      if(varr1 == 1){        
+                                                                         a = ultra();
+                                                                         if( varr1 ==1 && a<20){
+                                                                           
+                                                                              p4();
+                                                                              varr1++;
+                                                                              z = 0 ;
+                                                                               y = 0 ;
+                                                                               p = 0;
+                                                                               x = 0;
+                                                                               n = 0 ;
+                                                                               zz = 0 ;
+                                                                               yy = 0 ;
+                                                                               pp = 0;
+                                                                               xx = 0;
+                                                                               nn = 0 ;
+                                                                               qq = 0 ;
+                                                                               k =  0 ;
+                                                                               l = 0 ;
+                                                                           
+                                                                    }
+                                                                      }
+                                                                       while( sensorValues[4] >mlb ){
+                                                                           
+                                                                           right() ;
+                                                                        //   Serial.println("adjusting RIGHT");
+                                                                           qtra.read(sensorValues) ;
+                                                                         }
+                                                                           
+                                                                         
+                                                                            while( sensorValues[3] >mrb ){
+                                                                           left() ;
+                                                                          // Serial.println(" adjusting LEFT");
+                                                                             qtra.read(sensorValues) ;
+                                                                            }
+                                                                            forward();
+                                                                      }
+                                                                      if(varr1 ==2){
+                                                                       
+                                                                       while( sensorValues[4] >mlb ){
+                                                                           
+                                                                           right() ;
+                                                                        //   Serial.println("adjusting RIGHT");
+                                                                           qtra.read(sensorValues) ;
+                                                                         }
+                                                                           
+                                                                         
+                                                                            while( sensorValues[3] >mrb ){
+                                                                           left() ;
+                                                                          // Serial.println(" adjusting LEFT");
+                                                                             qtra.read(sensorValues) ;
+                                                                            }
+                                                                           
+                                                                          acc() ;
+                                                                            }                                              
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                            
+                         } 
+                         if(c ==2){
+                                                                       if(varr1 !=2){
+                                                                          if(time >150 && varr1 ==0 ){     
+                                                                               
+                                                                                  varr1++;
+                                                                                
+                                                                          }
+                                                                              acc();
+                                                                      if(varr1 == 1){        
+                                                                         a = ultra();
+                                                                         if( varr1 ==1 && a<20){
+                                                                           
+                                                                              p4();
+                                                                              varr1++;
+                                                                              z = 0 ;
+                                                                               y = 0 ;
+                                                                               p = 0;
+                                                                               x = 0;
+                                                                               n = 0 ;
+                                                                               zz = 0 ;
+                                                                               yy = 0 ;
+                                                                               pp = 0;
+                                                                               xx = 0;
+                                                                               nn = 0 ;
+                                                                               qq = 0 ;
+                                                                               k =  0 ;
+                                                                               l = 0 ;
+                                                                           
+                                                                    }
+                                                                      }
+                                                                       while( sensorValues[4] >mlb ){
+                                                                           
+                                                                           right() ;
+                                                                        //   Serial.println("adjusting RIGHT");
+                                                                           qtra.read(sensorValues) ;
+                                                                         }
+                                                                           
+                                                                         
+                                                                            while( sensorValues[3] >mrb ){
+                                                                           left() ;
+                                                                          // Serial.println(" adjusting LEFT");
+                                                                             qtra.read(sensorValues) ;
+                                                                            }
+                                                                      }
+                                                                      if(varr1 ==2){
+                                                                       
+                                                                       while( sensorValues[4] >mlb ){
+                                                                           
+                                                                           right() ;
+                                                                        //   Serial.println("adjusting RIGHT");
+                                                                           qtra.read(sensorValues) ;
+                                                                         }
+                                                                           
+                                                                         
+                                                                            while( sensorValues[3] >mrb ){
+                                                                           left() ;
+                                                                          // Serial.println(" adjusting LEFT");
+                                                                             qtra.read(sensorValues) ;
+                                                                            }
+                                                                           
+                                                                          acc() ;
+                                                                            }                                              
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                            
+                         }
+
+
+
+       }
+       
+       
+       
+       
+       
+       
+       
+       
+       
+       
+       
+       
+       
+       
+       
+       
+       
+       
+       
+       
+       
+       
+       
+       
+       
+       
+       
+       
+        if(time >53 && path ==2){
+               if(c ==0){  
+                        if(varr1 !=2){
+                                if(time >59 ){     
+                                   if(varr1 == 0){
+                                    one8right() ;
+                                    varr1++;
+                                  }
+                                }
+                                firstfast();
+                        if(varr1 == 1){        
+                           a = ultra();
+                           if( varr1 ==1 && a<20){
+                             if(time >60){
+                                p2l();
+                                varr1++;
+                                z = 0 ;
+                                 y = 0 ;
+                                 p = 0;
+                                 x = 0;
+                                 n = 0 ;
+                                 zz = 0 ;
+                                 yy = 0 ;
+                                 pp = 0;
+                                 xx = 0;
+                                 nn = 0 ;
+                                 qq = 0 ;
+                                 k =  0 ;
+                                 l = 0 ;
+                             }
+                      }
+                        }
+                         while( sensorValues[4] >mlb ){
+                             
+                             right() ;
+                          //   Serial.println("adjusting RIGHT");
+                             qtra.read(sensorValues) ;
+                           }
+                             
+                           
+                              while( sensorValues[3] >mrb ){
+                             left() ;
+                            // Serial.println(" adjusting LEFT");
+                               qtra.read(sensorValues) ;
+                              }
+                        }
+                        if(varr1 ==2){
+                         
+                         while( sensorValues[4] >mlb ){
+                             
+                             right() ;
+                          //   Serial.println("adjusting RIGHT");
+                             qtra.read(sensorValues) ;
+                           }
+                             
+                           
+                              while( sensorValues[3] >mrb ){
+                             left() ;
+                            // Serial.println(" adjusting LEFT");
+                               qtra.read(sensorValues) ;
+                              }
+                             
+                            firstfast() ;
+                              }
+                             }
+                             if(c ==1){
+                                                                       if(varr1 !=2){
+                                                                          if(time >99 ){     
+                                                                                 if(varr1 == 0){
+                                                                                  
+                                                                                  varr1++;
+                                                                                }
+                                                                              }
+                                                                              firstfast();
+                                                                      if(varr1 == 1){        
+                                                                         a = ultra();
+                                                                         if( varr1 ==1 && a<20){
+                                                                           if(time >99){
+                                                                              p3a();
+                                                                              varr1++;
+                                                                              z = 0 ;
+                                                                               y = 0 ;
+                                                                               p = 0;
+                                                                               x = 0;
+                                                                               n = 0 ;
+                                                                               zz = 0 ;
+                                                                               yy = 0 ;
+                                                                               pp = 0;
+                                                                               xx = 0;
+                                                                               nn = 0 ;
+                                                                               qq = 0 ;
+                                                                               k =  0 ;
+                                                                               l = 0 ;
+                                                                           }
+                                                                    }
+                                                                      }
+                                                                       while( sensorValues[4] >mlb ){
+                                                                           
+                                                                           right() ;
+                                                                        //   Serial.println("adjusting RIGHT");
+                                                                           qtra.read(sensorValues) ;
+                                                                         }
+                                                                           
+                                                                         
+                                                                            while( sensorValues[3] >mrb ){
+                                                                           left() ;
+                                                                          // Serial.println(" adjusting LEFT");
+                                                                             qtra.read(sensorValues) ;
+                                                                            }
+                                                                      }
+                                                                      if(varr1 ==2){
+                                                                       
+                                                                       while( sensorValues[4] >mlb ){
+                                                                           
+                                                                           right() ;
+                                                                        //   Serial.println("adjusting RIGHT");
+                                                                           qtra.read(sensorValues) ;
+                                                                         }
+                                                                           
+                                                                         
+                                                                            while( sensorValues[3] >mrb ){
+                                                                           left() ;
+                                                                          // Serial.println(" adjusting LEFT");
+                                                                             qtra.read(sensorValues) ;
+                                                                            }
+                                                                           
+                                                                          firstfast() ;
+                                                                            }                                              
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                            
+                         } 
+                         if(c ==2){
+                                                                       if(varr1 !=2){
+                                                                          if(time >157 ){     
+                                                                                 if(varr1 == 0){
+                                                                                  
+                                                                                  varr1++;
+                                                                                }
+                                                                              }
+                                                                              firstfast();
+                                                                      if(varr1 == 1){        
+                                                                         a = ultra();
+                                                                         if( varr1 ==1 && a<20){
+                                                                           if(time >158
+                                                                           ){
+                                                                              p3m();
+                                                                              varr1++;
+                                                                              z = 0 ;
+                                                                               y = 0 ;
+                                                                               p = 0;
+                                                                               x = 0;
+                                                                               n = 0 ;
+                                                                               zz = 0 ;
+                                                                               yy = 0 ;
+                                                                               pp = 0;
+                                                                               xx = 0;
+                                                                               nn = 0 ;
+                                                                               qq = 0 ;
+                                                                               k =  0 ;
+                                                                               l = 0 ;
+                                                                           }
+                                                                    }
+                                                                      }
+                                                                       while( sensorValues[4] >mlb ){
+                                                                           
+                                                                           right() ;
+                                                                        //   Serial.println("adjusting RIGHT");
+                                                                           qtra.read(sensorValues) ;
+                                                                         }
+                                                                           
+                                                                         
+                                                                            while( sensorValues[3] >mrb ){
+                                                                           left() ;
+                                                                          // Serial.println(" adjusting LEFT");
+                                                                             qtra.read(sensorValues) ;
+                                                                            }
+                                                                      }
+                                                                      if(varr1 ==2){
+                                                                       
+                                                                       
+                                                                           
+                                                                          firstfast() ;
+                                                                          while( sensorValues[4] >mlb ){
+                                                                           
+                                                                           right() ;
+                                                                        //   Serial.println("adjusting RIGHT");
+                                                                           qtra.read(sensorValues) ;
+                                                                         }
+                                                                           
+                                                                         
+                                                                            while( sensorValues[3] >mrb ){
+                                                                           left() ;
+                                                                          // Serial.println(" adjusting LEFT");
+                                                                             qtra.read(sensorValues) ;
+                                                                            }
+                                                                            }                                              
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                            
+                         }                               
+        }
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+if(time >53 && path == 3){
+                 
+              if(c ==0){  
+                        if(varr1 !=3){
+                                
+                                  if(time> 58 ){
+                                   if(varr1 == 0){
+                                     one8right();
+                                    varr1++;
+                                  }
+                                  }
+                                  if(time > 62){                            //sixth junction
+                               
+                               
+                               
+                                    if(varr1 ==1){
+                                      one8right();
+                                      varr1++ ;
+                                      
+                                    }
+                                    
+                                  }
+                                
+                        
+                               
+                        if(varr1 == 2){        
+                           a = ultra();
+                           if( varr1 ==2 && a<20){
+                             if(time >58){
+                               
+                               
+                               
+                                path31a();
+                               
+                                varr1++;
+                                z = 0 ;
+                                 y = 0 ;
+                                 p = 0;
+                                 x = 0;
+                                 n = 0 ;
+                                 zz = 0 ;
+                                 yy = 0 ;
+                                 pp = 0;
+                                 xx = 0;
+                                 nn = 0 ;
+                                 qq = 0 ;
+                                 k =  0 ;
+                                 l = 0 ;
+                               
+                             }
+                             
+                      }
+                        }
+                        
+                         firstfast();
+                         while( sensorValues[4] >mlb ){
+                             
+                             right() ;
+                          //   Serial.println("adjusting RIGHT");
+                             qtra.read(sensorValues) ;
+                           }
+                             
+                           
+                              while( sensorValues[3] >mrb ){
+                             left() ;
+                            // Serial.println(" adjusting LEFT");
+                               qtra.read(sensorValues) ;
+                              }
+                        }
+                        if(varr1 ==3){
+                         
+                        
+                             
+                            firstfast();
+                             while( sensorValues[4] >mlb ){
+                             
+                             right() ;
+                          //   Serial.println("adjusting RIGHT");
+                             qtra.read(sensorValues) ;
+                           }
+                             
+                           
+                              while( sensorValues[3] >mrb ){
+                             left() ;
+                            // Serial.println(" adjusting LEFT");
+                               qtra.read(sensorValues) ;
+                              }
+                              }
+                             }
+                             if(c ==1){
+                                                                       if(varr1 !=2){
+                                                                               
+                                                                             
+                                                                                if(time> 101 ){
+                                                                                 if(varr1 == 0){
+                                                                                  one8right() ;
+                                                                                  varr1++;
+                                                                                }
+                                                                                }
+                                                                              
+                                                                         
+                                                                              firstfast();
+                                                                      if(varr1 == 1){        
+                                                                         a = ultra();
+                                                                         if( varr1 ==1 && a<20){
+                                                                           if(time >102){
+                                                                              p2a();
+                                                                              varr1++;
+                                                                              z = 0 ;
+                                                                               y = 0 ;
+                                                                               p = 0;
+                                                                               x = 0;
+                                                                               n = 0 ;
+                                                                               zz = 0 ;
+                                                                               yy = 0 ;
+                                                                               pp = 0;
+                                                                               xx = 0;
+                                                                               nn = 2 ;
+                                                                               qq = 0 ;
+                                                                               k =  0 ;
+                                                                               l = 0 ;
+                                                                           }
+                                                                    }
+                                                                      }
+                                                                       while( sensorValues[4] >mlb ){
+                                                                           
+                                                                           right() ;
+                                                                        //   Serial.println("adjusting RIGHT");
+                                                                           qtra.read(sensorValues) ;
+                                                                         }
+                                                                           
+                                                                         
+                                                                            while( sensorValues[3] >mrb ){
+                                                                           left() ;
+                                                                          // Serial.println(" adjusting LEFT");
+                                                                             qtra.read(sensorValues) ;
+                                                                            }
+                                                                      }
+                                                                      if(varr1 ==2){
+                                                                       
+                                                                       while( sensorValues[4] >mlb ){
+                                                                           
+                                                                           right() ;
+                                                                        //   Serial.println("adjusting RIGHT");
+                                                                           qtra.read(sensorValues) ;
+                                                                         }
+                                                                           
+                                                                         
+                                                                            while( sensorValues[3] >mrb ){
+                                                                           left() ;
+                                                                          // Serial.println(" adjusting LEFT");
+                                                                             qtra.read(sensorValues) ;
+                                                                            }
+                                                                           
+                                                                          firstfast();
+                                                                            }                                              
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                            
+                         } 
+                         if(c ==2){
+                                                                       if(varr1 !=2){
+                                                                         
+                                                                                if(time> 163 ){
+                                                                                 if(varr1 == 0){
+                                                                                  one8right() ;
+                                                                                  varr1++;
+                                                                                }
+                                                                              }
+                                                                         
+                                                                         
+                                                                              firstfast();
+                                                                      if(varr1 == 1){        
+                                                                         a = ultra();
+                                                                         if( varr1 ==1 && a<20){
+                                                                           if(time >162){
+                                                                              p1();
+                                                                              varr1++;
+                                                                              z = 0 ;
+                                                                               y = 0 ;
+                                                                               p = 0;
+                                                                               x = 0;
+                                                                               n = 0 ;
+                                                                               zz = 0 ;
+                                                                               yy = 0 ;
+                                                                               pp = 0;
+                                                                               xx = 0;
+                                                                               nn = 0 ;
+                                                                               qq = 0 ;
+                                                                               k =  0 ;
+                                                                               l = 0 ;
+                                                                           }
+                                                                    }
+                                                                      }
+                                                                       while( sensorValues[4] >mlb ){
+                                                                           
+                                                                           right() ;
+                                                                        //   Serial.println("adjusting RIGHT");
+                                                                           qtra.read(sensorValues) ;
+                                                                         }
+                                                                           
+                                                                         
+                                                                            while( sensorValues[3] >mrb ){
+                                                                           left() ;
+                                                                          // Serial.println(" adjusting LEFT");
+                                                                             qtra.read(sensorValues) ;
+                                                                            }
+                                                                      }
+                                                                      if(varr1 ==2){
+                                                                       
+                                                                       while( sensorValues[4] >mlb ){
+                                                                           
+                                                                           right() ;
+                                                                        //   Serial.println("adjusting RIGHT");
+                                                                           qtra.read(sensorValues) ;
+                                                                         }
+                                                                           
+                                                                         
+                                                                            while( sensorValues[3] >mrb ){
+                                                                           left() ;
+                                                                          // Serial.println(" adjusting LEFT");
+                                                                             qtra.read(sensorValues) ;
+                                                                            }
+                                                                           
+                                                                          firstfast() ;
+                                                                            }                                              
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                            
+                         }
+
+       }
+       
+       if( (path!=1 && path!=2) && ccc ==0 && time >53 ){
+         
+         firstfast();
+         if(path ==3 || path ==4){
+           ccc = 1 ; 
+         }
+        
+}
+if(time >58){
+  
+  kk =0 ; 
+}
+}
+
+                                                       
+                                                                 
