@@ -1,0 +1,121 @@
+// Do not remove the include below
+#include "PlutoPilot.h"
+#include "Flight.h"
+#include "Control.h"
+#include "Sensor.h"
+#include "Motor.h"
+#include "Utils.h"
+#include "Print.h"
+
+bool turn = true;
+bool turned = false;
+Timer tp;
+//The setup function is called once at Pluto's hardware startup
+void plutoInit()
+{
+// Add your hardware initialization code here
+	Control.setUserLoopFrequency(3.5);
+	Control.setFailsafeState(CRASH, false);
+}
+
+int16_t var;
+bool start = false;
+bool zone1 = false;
+
+bool isarmed = false;
+
+//The function is called once before plutoPilot when you activate Developer Mode
+void onPilotStart()
+{
+  // do your one time stuffs here
+	Flight.deactivateFlightMode(FM_ALTHOLD);
+	Control.setRcCommand(RC_THROTTLE,5000);
+
+
+}
+
+
+
+// The loop function is called in an endless loop
+void plutoPilot()
+{
+
+	Flight.deactivateFlightMode(FM_ALTHOLD);
+
+	var = Flight.getAngle(AG_PITCH);
+	if (!isarmed)
+	{
+		isarmed = Control.arm();
+	}
+
+
+	if(var > 250)
+	{
+		zone1 = true;
+		Control.setRcCommand(RC_PITCH,2400);
+
+
+	}
+	if(var < 0 && zone1 && !turned)
+	{
+//		Control.setRcCommand(RC_PITCH,1500);
+
+
+		Control.setRcCommand(RC_THROTTLE,5000);
+
+		turned = true;
+
+
+
+	}
+
+	if(!zone1)
+	{
+			Control.setRcCommand(RC_THROTTLE,5000);
+			Flight.deactivateFlightMode(FM_ANGLE);
+			Flight.setAngleRate(AG_PITCH, 140);
+
+
+
+
+
+			//Add your repeated code here
+
+
+
+
+		//	Print.monitor("var ",var);
+		//	Print.monitor("\n");
+
+			Control.setRcCommand(RC_PITCH,700);
+
+	}
+
+
+
+
+
+
+
+}
+
+
+
+//The function is called once after plutoPilot when you deactivate Developer Mode
+void onPilotFinish()
+{
+
+
+// do your cleanup stuffs here
+	isarmed = false;
+    turn = false;
+	zone1 = false;
+	turned = false;
+    start = false;
+	Flight.activateFlightMode(FM_ANGLE);
+	Flight.deactivateFlightMode(FM_ALTHOLD);
+
+
+
+
+}
